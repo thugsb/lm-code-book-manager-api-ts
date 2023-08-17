@@ -5,6 +5,10 @@ import { Book } from "../models/book";
 import * as bookService from "../services/books";
 jest.mock("../services/books");
 
+afterEach(() => {
+	jest.clearAllMocks();
+});
+
 const dummyBookData = [
 	{
 		bookId: 1,
@@ -20,12 +24,6 @@ const dummyBookData = [
 			"Before being born, each person must visit the magical Shop Before Life, where they choose what kind of person they will become down on Earth...",
 	},
 ];
-
-// Arrange, Act, Assert
-
-afterEach(() => {
-	jest.clearAllMocks();
-});
 
 describe("GET /api/v1/books endpoint", () => {
 	test("status code successfully 200", async () => {
