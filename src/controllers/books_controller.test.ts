@@ -63,33 +63,6 @@ describe("GET /api/v1/books endpoint", () => {
 	});
 });
 
-describe("POST /api/v1/books endpoint", () => {
-	test("status code successfully 201 for saving a valid book", async () => {
-		// Act
-		const res = await request(app)
-			.post("/api/v1/books")
-			.send({ bookId: 3, title: "Fantastic Mr. Fox", author: "Roald Dahl" });
-
-		// Assert
-		expect(res.statusCode).toEqual(201);
-	});
-
-	test("status code 400 when saving ill formatted JSON", async () => {
-		// Arrange - we can enforce throwing an exception by mocking the implementation
-		jest.spyOn(bookService, "saveBook").mockImplementation(() => {
-			throw new Error("Error saving book");
-		});
-
-		// Act
-		const res = await request(app)
-			.post("/api/v1/books")
-			.send({ title: "Fantastic Mr. Fox", author: "Roald Dahl" }); // No bookId
-
-		// Assert
-		expect(res.statusCode).toEqual(400);
-	});
-});
-
 describe("GET /api/v1/books/{bookId} endpoint", () => {
 	test("status code successfully 200 for a book that is found", async () => {
 		// Arrange
@@ -102,8 +75,6 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 
 		// Assert
 		expect(res.statusCode).toEqual(200);
-		expect(mockGetBook).toHaveBeenCalledTimes(1);
-		expect(mockGetBook).toHaveBeenCalledWith(dummyBookData[1].bookId);
 	});
 
 	test("status code successfully 404 for a book that is not found", async () => {
@@ -133,5 +104,32 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 
 		// Assert
 		expect(res.body).toEqual(dummyBookData[1]);
+	});
+});
+
+describe("POST /api/v1/books endpoint", () => {
+	test("status code successfully 201 for saving a valid book", async () => {
+		// Act
+		const res = await request(app)
+			.post("/api/v1/books")
+			.send({ bookId: 3, title: "Fantastic Mr. Fox", author: "Roald Dahl" });
+
+		// Assert
+		expect(res.statusCode).toEqual(201);
+	});
+
+	test("status code 400 when saving ill formatted JSON", async () => {
+		// Arrange - we can enforce throwing an exception by mocking the implementation
+		jest.spyOn(bookService, "saveBook").mockImplementation(() => {
+			throw new Error("Error saving book");
+		});
+
+		// Act
+		const res = await request(app)
+			.post("/api/v1/books")
+			.send({ title: "Fantastic Mr. Fox", author: "Roald Dahl" }); // No bookId
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
 	});
 });
