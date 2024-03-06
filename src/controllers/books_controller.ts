@@ -35,3 +35,18 @@ export const updateBook = async (req: Request, res: Response) => {
 	const book = await bookService.updateBook(bookId, bookUpdateData);
 	res.status(204).json(book);
 };
+
+// US5 - Deleting
+export const deleteBook = async (req: Request, res: Response) => {
+	const bookId = Number.parseInt(req.params.bookId);
+	if (Number.isNaN(bookId)) {
+		res.status(400).json("Invalid book ID - must be a number");
+	} else {
+		const book = await bookService.deleteBook(bookId);
+		if (book) {
+			res.status(204).json(book);
+		} else {
+			res.status(400).json("Book not found");
+		}
+	}
+};

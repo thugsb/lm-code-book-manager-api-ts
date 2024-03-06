@@ -133,3 +133,24 @@ describe("POST /api/v1/books endpoint", () => {
 		expect(res.statusCode).toEqual(400);
 	});
 });
+
+describe("DELETE /api/v1/books/{bookId} endpoint", () => {
+	test("status code fail 400 if a non-Integer ID is given", async () => {
+		const res = await request(app).delete("/api/v1/books/df");
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+	});
+	test("status code successfully 204 for deleting an existing book", async () => {
+		const res = await request(app).delete("/api/v1/books/1");
+
+		// Assert
+		expect(res.statusCode).toEqual(204);
+	});
+	test("status code fail 400 for deleting a non-existent book", async () => {
+		const res = await request(app).delete("/api/v1/books/445");
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+	});
+});

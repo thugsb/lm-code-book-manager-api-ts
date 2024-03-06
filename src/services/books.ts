@@ -17,8 +17,13 @@ export const saveBook = async (book: Book) => {
 // User Story 4 - Update Book By Id Solution
 export const updateBook = async (bookId: number, book: Book) => {
 	return Book.update(book, {
-		where: {
-			bookId,
-		},
+		where: { bookId },
+	});
+};
+
+// US5 - Delete
+export const deleteBook = async (bookId: number) => {
+	return Book.destroy({
+		where: { bookId },
 	});
 };
