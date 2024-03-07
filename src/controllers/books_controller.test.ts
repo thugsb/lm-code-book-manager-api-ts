@@ -136,18 +136,25 @@ describe("POST /api/v1/books endpoint", () => {
 
 describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 	test("status code fail 400 if a non-Integer ID is given", async () => {
+		// Arrange
+		// Book.destroy() will return 1 if successful or 0 if not.
+		jest.spyOn(bookService, "deleteBook").mockResolvedValue(0);
+
+		// Act
 		const res = await request(app).delete("/api/v1/books/df");
 
 		// Assert
 		expect(res.statusCode).toEqual(400);
 	});
 	test("status code successfully 204 for deleting an existing book", async () => {
+		jest.spyOn(bookService, "deleteBook").mockResolvedValue(1);
 		const res = await request(app).delete("/api/v1/books/1");
 
 		// Assert
 		expect(res.statusCode).toEqual(204);
 	});
 	test("status code fail 400 for deleting a non-existent book", async () => {
+		jest.spyOn(bookService, "deleteBook").mockResolvedValue(0);
 		const res = await request(app).delete("/api/v1/books/445");
 
 		// Assert
