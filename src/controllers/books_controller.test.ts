@@ -132,6 +132,22 @@ describe("POST /api/v1/books endpoint", () => {
 		// Assert
 		expect(res.statusCode).toEqual(400);
 	});
+
+	test("status code 400 when saving an existing book", async () => {
+		// Arrange - we can enforce throwing an exception by mocking the implementation
+		jest.spyOn(bookService, "saveBook").mockImplementation(() => {
+			throw new Error("Validation error");
+		});
+
+		// Act
+		const res = await request(app)
+			.post("/api/v1/books")
+			.send({ title: "Fantastic Mr. Fox", author: "Roald Dahl", bookId: 1 });
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toEqual({ message: "Validation error" });
+	});
 });
 
 describe("DELETE /api/v1/books/{bookId} endpoint", () => {
@@ -145,6 +161,7 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 
 		// Assert
 		expect(res.statusCode).toEqual(400);
+		expect(res.body).toBe("Invalid book ID - must be a number");
 	});
 	test("status code successfully 204 for deleting an existing book", async () => {
 		jest.spyOn(bookService, "deleteBook").mockResolvedValue(1);
@@ -153,11 +170,12 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 		// Assert
 		expect(res.statusCode).toEqual(204);
 	});
-	test("status code fail 400 for deleting a non-existent book", async () => {
+	test("status code fail 404 for deleting a non-existent book", async () => {
 		jest.spyOn(bookService, "deleteBook").mockResolvedValue(0);
 		const res = await request(app).delete("/api/v1/books/445");
 
 		// Assert
-		expect(res.statusCode).toEqual(400);
+		expect(res.statusCode).toEqual(404);
+		expect(res.body).toBe("Book not found");
 	});
 });

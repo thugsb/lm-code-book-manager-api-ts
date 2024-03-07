@@ -42,11 +42,11 @@ export const deleteBook = async (req: Request, res: Response) => {
 	if (Number.isNaN(bookId)) {
 		res.status(400).json("Invalid book ID - must be a number");
 	} else {
-		const book = await bookService.deleteBook(bookId);
-		if (book) {
-			res.status(204).json(book);
+		const returnedValue = await bookService.deleteBook(bookId);
+		if (returnedValue) {
+			res.status(204).send();
 		} else {
-			res.status(400).json("Book not found");
+			res.status(404).json("Book not found");
 		}
 	}
 };
