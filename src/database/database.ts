@@ -15,9 +15,7 @@ const {
 if (NODE_ENV !== "test") {
 	sequelize = new Sequelize(
 		DB_NAME ?? "MISSING_DB_NAME_CONFIG",
-
 		DB_USERNAME ?? "MISSING_DB_USERNAME_CONFIG",
-
 		DB_PASSWORD ?? "MISSING_DB_PASSWORD_CONFIG",
 		{
 			host: DB_HOST ?? "MISSING_DB_HOST_CONFIG",
@@ -25,4 +23,6 @@ if (NODE_ENV !== "test") {
 			dialect: (DB_DIALECT as Dialect) ?? "postgres",
 		}
 	);
+	// Or sequelize could be called with a Connection String:
+	// const connectionString = `${DB_DIALECT}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
 }
