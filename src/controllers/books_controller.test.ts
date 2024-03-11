@@ -79,7 +79,6 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 
 	test("status code successfully 404 for a book that is not found", async () => {
 		// Arrange
-
 		jest
 			.spyOn(bookService, "getBook")
 			// this is a weird looking type assertion!
