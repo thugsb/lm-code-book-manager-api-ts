@@ -19,11 +19,22 @@ export const getBook = async (req: Request, res: Response) => {
 
 export const saveBook = async (req: Request, res: Response) => {
 	const bookToBeSaved = req.body;
-	try {
-		const book = await bookService.saveBook(bookToBeSaved);
-		res.status(201).json(book);
-	} catch (error) {
-		res.status(400).json({ message: (error as Error).message });
+	const bookId = bookToBeSaved.bookId;
+
+	if (Number.isNaN(bookId) || !Number.isInteger(bookId) || Number(bookId) < 1) {
+		res.status(400).json("The Book ID needs to be a positive integer.");
+	} else {
+		const book = await bookService.getBook(1);
+		if (book) {
+			res.status(400).json("A book with that ID already exists.");
+		} else {
+			try {
+				const book = await bookService.saveBook(bookToBeSaved);
+				res.status(201).json(book);
+			} catch (error) {
+				res.status(400).json({ message: (error as Error).message });
+			}
+		}
 	}
 };
 

@@ -109,10 +109,16 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 
 describe("POST /api/v1/books endpoint", () => {
 	test("status code successfully 201 for saving a valid book", async () => {
+		// Arrange
+		jest
+			.spyOn(bookService, "getBook")
+			.mockResolvedValue(undefined as unknown as Book);
 		// Act
-		const res = await request(app)
-			.post("/api/v1/books")
-			.send({ bookId: 3, title: "Fantastic Mr. Fox", author: "Roald Dahl" });
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: 56,
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+		});
 
 		// Assert
 		expect(res.statusCode).toEqual(201);
@@ -133,20 +139,57 @@ describe("POST /api/v1/books endpoint", () => {
 		expect(res.statusCode).toEqual(400);
 	});
 
-	test("status code 400 when saving an existing book", async () => {
-		// Arrange - we can enforce throwing an exception by mocking the implementation
-		jest.spyOn(bookService, "saveBook").mockImplementation(() => {
-			throw new Error("Validation error");
-		});
-
+	test("status code 400 when saving a book with a negative ID", async () => {
 		// Act
-		const res = await request(app)
-			.post("/api/v1/books")
-			.send({ title: "Fantastic Mr. Fox", author: "Roald Dahl", bookId: 1 });
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: -5,
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+		});
 
 		// Assert
 		expect(res.statusCode).toEqual(400);
-		expect(res.body).toEqual({ message: "Validation error" });
+		expect(res.body).toEqual("The Book ID needs to be a positive integer.");
+	});
+	test("status code 400 when saving a book with a floating ID", async () => {
+		// Act
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: 4.5,
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+		});
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toEqual("The Book ID needs to be a positive integer.");
+	});
+	test("status code 400 when saving a book with a non-number ID", async () => {
+		// Act
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: "QQQ",
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+		});
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toEqual("The Book ID needs to be a positive integer.");
+	});
+	test("status code 400 when saving an existing book", async () => {
+		// Arrange
+		const mockGetBook = jest
+			.spyOn(bookService, "getBook")
+			.mockResolvedValue(dummyBookData[1] as Book);
+		// Act
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: 1,
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+		});
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toEqual("A book with that ID already exists.");
 	});
 });
 
